@@ -2,8 +2,12 @@ name: entrega-semana3
 
 services:
   db:
-    image: mysql:8.0
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    image: entrega-semana3-db:1.0
     container_name: sem3-mysql
+    hostname: sem3-mysql
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -12,7 +16,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     networks:
       - red_interna
     healthcheck:
@@ -23,8 +26,12 @@ services:
       start_period: 30s
 
   wordpress:
-    image: wordpress:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: entrega-semana3-wordpress:1.0
     container_name: sem3-wordpress
+    hostname: sem3-wordpress
     restart: unless-stopped
     depends_on:
       db:
@@ -38,6 +45,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - wp_data:/var/www/html
+      - ./wordpress/wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
     networks:
       - red_interna
 

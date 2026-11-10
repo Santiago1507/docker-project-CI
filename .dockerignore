@@ -1,0 +1,10 @@
+.git
+.github
+.env
+*.log
+*.docx
+*.pdf
+capturas
+docs
+tools
+db
