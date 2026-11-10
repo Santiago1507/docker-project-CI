@@ -1,0 +1,78 @@
+name: Build Docker images
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: ci_password
+      MYSQL_ROOT_PASSWORD: ci_root_password
+      WORDPRESS_PORT: 8080
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build both images with Docker Compose
+        run: docker compose build
+
+      - name: Validate Compose file
+        run: docker compose config
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Install WordPress
+        run: |
+          for i in $(seq 1 20); do
+            if docker compose exec -T -u www-data wordpress wp core is-installed 2>/dev/null; then
+              echo "WordPress ya esta instalado."
+              exit 0
+            fi
+            if docker compose exec -T -u www-data wordpress wp core install \
+              --url="http://localhost:8080" \
+              --title="Entrega Semana 3" \
+              --admin_user="admin" \
+              --admin_password="ci_admin_password" \
+              --admin_email="ci@example.com" \
+              --skip-email; then
+              echo "WordPress instalado."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "No se pudo instalar WordPress."
+          docker compose logs --tail=100 wordpress
+          exit 1
+
+      - name: Wait for WordPress
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/ > /dev/null; then
+              echo "WordPress esta respondiendo."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "WordPress no respondio a tiempo."
+          docker compose logs --tail=100
+          exit 1
+
+      - name: Verify communication between containers
+        run: bash .github/scripts/verify-communication.sh
+
+      - name: Show container status
+        run: docker compose ps
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
