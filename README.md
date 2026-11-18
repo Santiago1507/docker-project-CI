@@ -89,6 +89,14 @@ Para abrir la prueba de comunicación, ingrese a **Páginas > Prueba de comunica
 │   │   └── ci.yml
 │   └── scripts/
 │       └── verify-communication.sh
+├── Jenkinsfile
+├── jenkins/
+│   ├── Dockerfile
+│   ├── plugins.txt
+│   ├── docker-compose.yml
+│   ├── README.md
+│   └── scripts/
+│       └── verify-communication.sh
 ```
 
 ## Comandos útiles
@@ -144,6 +152,24 @@ El workflow `.github/workflows/ci.yml` se ejecuta en cada `push` y `pull_request
 6. Elimina los contenedores y volúmenes de prueba.
 
 El check debe quedar en verde en la pestaña **Actions** del repositorio.
+
+## Integración continua con Jenkins (entrega semana 5)
+
+El archivo `Jenkinsfile` define el pipeline con las etapas **Checkout**, **Build** y **Test**, además de un bloque **post**. El job se configura en Jenkins con *Pipeline script from SCM* y se dispara automáticamente con Poll SCM o con un webhook de GitHub.
+
+```powershell
+cd jenkins
+docker compose up -d --build
+docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+Jenkins queda disponible en <http://localhost:8082>. Las credenciales se guardan en Jenkins con los IDs indicados en [`jenkins/README.md`](jenkins/README.md); no se escriben contraseñas en el código. El pipeline construye `entrega-semana3-wordpress:1.0` y `entrega-semana3-db:1.0`, levanta el compose y ejecuta la prueba de comunicación por el nombre del servicio `db`.
+
+La documentación de la entrega 5 se genera con:
+
+```powershell
+python tools\generar_documento_semana5.py
+```
 
 ## Seguridad y GitHub
 

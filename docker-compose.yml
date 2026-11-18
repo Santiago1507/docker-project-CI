@@ -6,7 +6,7 @@ services:
       context: ./db
       dockerfile: Dockerfile
     image: entrega-semana3-db:1.0
-    container_name: sem3-mysql
+    container_name: ${DB_CONTAINER_NAME:-sem3-mysql}
     hostname: sem3-mysql
     restart: unless-stopped
     environment:
@@ -30,7 +30,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: entrega-semana3-wordpress:1.0
-    container_name: sem3-wordpress
+    container_name: ${WP_CONTAINER_NAME:-sem3-wordpress}
     hostname: sem3-wordpress
     restart: unless-stopped
     depends_on:
