@@ -27,5 +27,10 @@ if [ -z "$PAGE_ID" ]; then
 fi
 
 echo "Pagina de prueba: $PAGE_ID"
-curl -fsS "http://localhost:8080/?page_id=$PAGE_ID" | grep -q "MySQL verificada"
-echo "Comunicación verificada: WordPress escribió y leyó un registro en MySQL usando el hostname db."
+html=$(curl -fsS "http://localhost:8080/?page_id=$PAGE_ID")
+
+if [[ "$html" != *"MySQL verificada"* ]]; then
+  echo "No se encontro el texto de verificacion en la pagina."
+  docker compose logs --tail=100 wordpress
+  exit 1
+fi
