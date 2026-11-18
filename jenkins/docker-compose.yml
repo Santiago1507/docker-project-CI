@@ -1,0 +1,20 @@
+name: semana5-jenkins
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: entrega-semana3-jenkins:1.0
+    container_name: sem5-jenkins
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  jenkins_home:
+    name: semana5_jenkins_home
