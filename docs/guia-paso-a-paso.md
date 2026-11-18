@@ -27,9 +27,6 @@ entrega-semana3/
 ├── wordpress/
 │   ├── php.ini
 │   └── wp-content/mu-plugins/entrega-docker.php
-├── capturas/
-├── docs/
-└── tools/
 ```
 
 ## 3. Variables de entorno
@@ -171,11 +168,6 @@ El workflow `.github/workflows/ci.yml` se ejecuta en cada `push` y `pull_request
 6. Ejecuta `.github/scripts/verify-communication.sh`.
 7. Muestra el estado y elimina los contenedores de prueba.
 
-El resultado se consulta en la pestaña **Actions** del repositorio y debe quedar en verde.
-
-## 12. Evidencias
-
-Las capturas de la carpeta `capturas/` se insertan automáticamente en el DOCX:
 
 ```powershell
 python tools\generar_documentacion.py
